@@ -2,6 +2,7 @@ const video    = document.querySelector('.player')
 const canvas   = document.querySelector('.photo');
 const ctx 	   = canvas.getContext('2d');
 const download = document.querySelector('.download');
+let shift      = 0;
 
 const getVideo = () => {
 	// Set the video source
@@ -12,11 +13,6 @@ const getVideo = () => {
        		video.play();
       	}
     );
-};
-
-const getAspectRatio = () => {
-	aspectRatio = video.videoHeight / video.videoWidth;
-	document.querySelector('body').style.paddingTop = aspectRatio / 2 * 100 + '%';
 };
 
 const paintToCanvas = () => {
@@ -66,7 +62,7 @@ const greenScreen = pixels => {
 		bmax: 0,
 	};
 
-  	for (i = 0; i < pixels.data.length; i +=4) {
+  	for (i = 0; i < pixels.data.length; i += 4) {
 	    red   = pixels.data[i + 0];
 	    green = pixels.data[i + 1];
 	    blue  = pixels.data[i + 2];
@@ -87,8 +83,25 @@ const greenScreen = pixels => {
   	return pixels;
 };
 
+const moveScreen = pixels => {
+    shift += 20;
+
+    for (i = 0; i < pixels.data.length; i += 4) {
+        pixels.data[i + 0] = pixels.data[(i + 0 + shift) % pixels.data.length];
+        pixels.data[i + 1] = pixels.data[(i + 1 + shift) % pixels.data.length];
+        pixels.data[i + 2] = pixels.data[(i + 2 + shift) % pixels.data.length];
+    }
+
+    return pixels;
+};
+
 const downloadCanvas = () => {
 	download.href = canvas.toDataURL('image/png');
+};
+
+const getAspectRatio = () => {
+    aspectRatio = video.videoHeight / video.videoWidth;
+    document.querySelector('body').style.paddingTop = aspectRatio / 2 * 100 + '%';
 };
 
 getVideo();
